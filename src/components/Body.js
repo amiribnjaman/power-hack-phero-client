@@ -44,7 +44,7 @@ const Body = () => {
 
     return (
         <div className='w-9/12 mx-auto mt-10'>
-            <div className='px-6 mb-8 items-center top-bar bg-[#F0F8FF] shadow-lg py-1 flex justify-between'>
+            <div className='px-6 mb-8 items-center top-bar bg-[#F0F8FF] shadow-lg py-1.5 flex justify-between'>
                 <div className='flex justify-between w-1/4'>
                     <h6 className='mt-1 font-semibold'>Billings</h6>
                     <input type="search" id="default-search" class="h-[35px] bg-[#F0F8FF] border-[1.5px] border-[#e2edf7] px-12 ml-14 py-0 pl-6 text-sm text-gray-900 focus:ring-blue-500" placeholder="Search" required />
@@ -52,7 +52,7 @@ const Body = () => {
                 <div>
                     <button
                         onClick={() => setToggleAddBillBtn(!toggleAddBillBtn)}
-                        type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium text-sm px-5 py-2.5 mr-2">Add New Bill</button>
+                        type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none rounded focus:ring-4 focus:ring-gray-300 font-medium text-sm px-5 py-2.5 mr-2">Add New Bill</button>
 
                     <div id="defaultModal" tabindex="-1" aria-hidden="true" class={`${toggleAddBillBtn ? 'block' : 'hidden'} overflow-y-auto overflow-x-hidden fixed bg-[rgba(188,188,188,.8)] top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full flex shadow-lg justify-center items-center`}>
                         <div class="relative flex justify-center p-4 w-full max-w-2xl h-full md:h-auto">
@@ -121,6 +121,8 @@ const Body = () => {
                     {bills.map((bill, key) => <TableSingleRow
                         key={key}
                         bill={bill}
+                        reRender={reRender}
+                        setReRender={setReRender}
                     />)}
                 </table>
             </div>
