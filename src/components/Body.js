@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import TableSingleRow from './TableSingleRow'
 
-const Body = () => {
+const Body = ({setTotalPaid, setReRender, reRender}) => {
     const [toggleAddBillBtn, setToggleAddBillBtn] = useState(false)
     const [bills, setBills] = useState([])
-    const [reRender, setReRender] = useState(false)
+
 
     useEffect(() => {
         fetch('http://localhost:5000/api/billing-list')
             .then(res => res.json())
             .then(data => {
-                setBills(data)
-                console.log(data);
+                setBills(data.result)
+                setTotalPaid(data.count)
             })
-    }, [reRender])
+    }, [reRender, setTotalPaid])
 
     const handleAddBillForm = e => {
         e.preventDefault()
@@ -32,18 +32,22 @@ const Body = () => {
             fetch('http://localhost:5000/api/add-billing', {
                 method: 'POST',
                 headers: {
+                    'authorization': 'Bearer ' + localStorage.getItem('accessToken'),
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify(body)
             })
+            .then(res => res.json())
+            .then(data => {
+                setReRender(!reRender)
+                setToggleAddBillBtn(!toggleAddBillBtn)
+            })
         }
-        setReRender(!reRender)
         e.target.reset()
-        setToggleAddBillBtn(!toggleAddBillBtn)
     }
 
     return (
-        <div className='w-9/12 mx-auto mt-10'>
+        <div className='w-9/12 mx-auto my-10'>
             <div className='px-6 mb-8 items-center top-bar bg-[#F0F8FF] shadow-lg py-1.5 flex justify-between'>
                 <div className='flex justify-between w-1/4'>
                     <h6 className='mt-1 font-semibold'>Billings</h6>

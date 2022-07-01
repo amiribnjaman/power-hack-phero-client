@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 
-const TableSingleRow = ({bill, reRender, setReRender}) => {
+const TableSingleRow = ({ bill, reRender, setReRender }) => {
     const { _id, name, email, phone, amount } = bill
     const [id, setId] = useState('')
 
@@ -12,17 +13,49 @@ const TableSingleRow = ({bill, reRender, setReRender}) => {
     const [upPhone, setUpPhone] = useState('')
     const [upAmount, setUpAmount] = useState('')
 
-    // Delete function
-
-    const handleBillDelete = e => {
+    // Handle Delete function
+    const handleBillDelete = () => {
         fetch(`http://localhost:5000/api/delete-billing/${_id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'authorization': 'Bearer ' + localStorage.getItem('accessToken')
+            }
         })
-        .then(res => res.json())
-        .then(data => {
-            setDeleteBtnToggle(!deleteBtnToggle)
-            setReRender(!reRender)
-        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                setDeleteBtnToggle(!deleteBtnToggle)
+                setReRender(!reRender)
+            })
+    }
+
+    // Handle update function
+    const handleBillUpdate = e => {
+        e.preventDefault()
+
+        const data = {
+            name: upName || name,
+            email: upEmail || email,
+            phone: upPhone || phone,
+            amount: upAmount || amount
+        }
+
+        if (upName || upEmail || upPhone || upAmount) {
+            fetch(`http://localhost:5000/api/update-billing/${_id}`, {
+                method: 'PUT',
+                headers: {
+                    'authorization': 'Bearer' + localStorage.getItem('accessToken'),
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    setUpdateFormToggle(!updateFormToggle)
+                    setReRender(!reRender)
+                })
+            e.target.reset()
+        }
     }
 
 
@@ -33,7 +66,7 @@ const TableSingleRow = ({bill, reRender, setReRender}) => {
                     {_id}
                 </th>
                 <td class="px-6 py-4 border-r border-[#e2edf7]">
-                    {name}
+                    {name.charAt(0).toUpperCase() + name.slice(1)}
                 </td>
                 <td class="px-6 py-4 border-r border-[#e2edf7]">
                     {email}
@@ -73,7 +106,7 @@ const TableSingleRow = ({bill, reRender, setReRender}) => {
                                 </div>
 
                                 <form
-                                    onSubmit={''}
+                                    onSubmit={handleBillUpdate}
                                     className='px-3 mt-4 w-3/4 mx-auto'>
                                     <div class="mb-6">
                                         <input
