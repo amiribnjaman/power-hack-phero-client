@@ -15,8 +15,9 @@ const Body = ({ totalPaid, setTotalPaid, setReRender, reRender }) => {
         pages = Math.ceil(totalPaid / 10)
     }
 
+    // Data load
     useEffect(() => {
-        fetch(`http://localhost:5000/api/billing-list?page=${currentPage}&search=${search}`)
+        fetch(`https://boxing-eh-11906.herokuapp.com/api/billing-list?page=${currentPage}&search=${search}`)
             .then(res => res.json())
             .then(data => {
                 setBills(data.result)
@@ -42,7 +43,7 @@ const Body = ({ totalPaid, setTotalPaid, setReRender, reRender }) => {
             const regex = /^\S+@\S+\.\S+$/
             if (regex.test(email)) {
                 if (phone.length >= 11) {
-                    fetch('http://localhost:5000/api/add-billing', {
+                    fetch('https://boxing-eh-11906.herokuapp.com/api/add-billing', {
                         method: 'POST',
                         headers: {
                             'authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -66,7 +67,6 @@ const Body = ({ totalPaid, setTotalPaid, setReRender, reRender }) => {
         }
         e.target.reset()
     }
-
 
 
 
@@ -122,8 +122,8 @@ const Body = ({ totalPaid, setTotalPaid, setReRender, reRender }) => {
                 </div>
             </div>
 
+            
             {/* body */}
-
             <div class="relative overflow-x-auto shadow-lg">
                 <table class="w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase">
@@ -161,14 +161,18 @@ const Body = ({ totalPaid, setTotalPaid, setReRender, reRender }) => {
             <div className='my-10 flex justify-center'>
                 {
                     pages > 0 ? [...Array(pages).keys()]
-                        .map(num => <button
-                            onClick={() => setCurrentPage(num)}
-                            className={`${currentPage == num ? 'bg-blue-500 text-white border-0' : ''} px-3 bg-white border border-gray-700 mx-2 text-gray-900`}>{num + 1}</button>) : ''
+                        .map(num =>
+                            <button
+                                onClick={() => setCurrentPage(num)}
+                                className={`${currentPage == num ? 'bg-blue-500 text-white border-0' : ''} px-3 bg-white border border-gray-700 mx-2 text-gray-900`}>{num + 1}</button>
+                        ) : ''
                 }
             </div>
 
-        </div>
+        </div >
     );
 };
 
 export default Body;
+
+//

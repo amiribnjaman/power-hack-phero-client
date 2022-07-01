@@ -7,7 +7,7 @@ const Navbar = ({ totalPaid, reRender, setReRender }) => {
     const [loginErrMsg, setLoginErrMsg] = useState('')
     const user = localStorage.getItem('accessToken')
 
-
+    // Handle register form
     const handleRegisterForm = e => {
         e.preventDefault()
         const name = e.target.regis_name.value
@@ -24,7 +24,7 @@ const Navbar = ({ totalPaid, reRender, setReRender }) => {
             const regex = /^\S+@\S+\.\S+$/
             if (regex.test(email)) {
                 if (pass.length > 5) {
-                    fetch('http://localhost:5000/api/registration', {
+                    fetch('https://boxing-eh-11906.herokuapp.com/api/registration', {
                         method: 'POST',
                         headers: {
                             'content-type': 'application/json'
@@ -60,7 +60,7 @@ const Navbar = ({ totalPaid, reRender, setReRender }) => {
             const regex = /^\S+@\S+\.\S+$/
             if (regex.test(email)) {
                 if (pass.length > 5) {
-                    fetch(`http://localhost:5000/api/login/${email}/${pass}`)
+                    fetch(`https://boxing-eh-11906.herokuapp.com/api/login/${email}/${pass}`)
                         .then(res => res.json())
                         .then(data => {
                             console.log(data)
@@ -102,7 +102,7 @@ const Navbar = ({ totalPaid, reRender, setReRender }) => {
                 <div className='flex '>
                     <h6>Paid total: {totalPaid}</h6>
                     {user ? <button
-                    onClick={handleLogout}
+                        onClick={handleLogout}
                         className='ml-4 bg-gray-300 px-6 py-1 rounded-lg'>
                         Logout
                     </button> : <button

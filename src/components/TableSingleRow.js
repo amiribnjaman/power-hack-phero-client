@@ -3,7 +3,6 @@ import { toast } from 'react-toastify';
 
 const TableSingleRow = ({ bill, reRender, setReRender }) => {
     const { _id, name, email, phone, amount } = bill
-    const [id, setId] = useState('')
 
     const [updateFormToggle, setUpdateFormToggle] = useState(false)
     const [deleteBtnToggle, setDeleteBtnToggle] = useState(false)
@@ -15,7 +14,7 @@ const TableSingleRow = ({ bill, reRender, setReRender }) => {
 
     // Handle Delete function
     const handleBillDelete = () => {
-        fetch(`http://localhost:5000/api/delete-billing/${_id}`, {
+        fetch(`https://boxing-eh-11906.herokuapp.com/api/delete-billing/${_id}`, {
             method: 'DELETE',
             headers: {
                 'authorization': 'Bearer ' + localStorage.getItem('accessToken')
@@ -46,7 +45,7 @@ const TableSingleRow = ({ bill, reRender, setReRender }) => {
         }
 
         if (upName || upEmail || upPhone || upAmount) {
-            fetch(`http://localhost:5000/api/update-billing/${_id}`, {
+            fetch(`https://boxing-eh-11906.herokuapp.com/api/update-billing/${_id}`, {
                 method: 'PUT',
                 headers: {
                     'authorization': 'Bearer' + localStorage.getItem('accessToken'),
