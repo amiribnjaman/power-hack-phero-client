@@ -1,23 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TableSingleRow from './TableSingleRow'
 
 const Body = () => {
     const [toggleAddBillBtn, setToggleAddBillBtn] = useState(false)
+    const [bills, setBills] = useState([])
+    const [reRender, setReRender] = useState(false)
 
+    useEffect(() => {
+        fetch('http://localhost:5000/api/billing-list')
+            .then(res => res.json())
+            .then(data => {
+                setBills(data)
+                console.log(data);
+            })
+    }, [reRender])
+
+    const handleAddBillForm = e => {
+        e.preventDefault()
+        const name = e.target.name.value
+        const email = e.target.email.value
+        const phone = e.target.phone.value
+        const amount = e.target.amount.value
+
+        const body = {
+            name,
+            email,
+            phone,
+            amount
+        }
+        if (name && email && phone && amount) {
+            fetch('http://localhost:5000/api/add-billing', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+        }
+        setReRender(!reRender)
+        e.target.reset()
+        setToggleAddBillBtn(!toggleAddBillBtn)
+    }
 
     return (
         <div className='w-9/12 mx-auto mt-10'>
-            <div className='px-6 mb-8 items-center top-bar bg-[#BCBCBC] py-1 flex justify-between'>
+            <div className='px-6 mb-8 items-center top-bar bg-[#F0F8FF] shadow-lg py-1 flex justify-between'>
                 <div className='flex justify-between w-1/4'>
-                    <h6 className='mt-1'>Billings</h6>
-                    <input type="search" id="default-search" class="h-[35px] bg-[#BCBCBC] border-[1.5px] border-[#000] px-12 ml-14 py-0 pl-6 text-sm text-gray-900 border border-gray-300 focus:ring-blue-500" placeholder="Search" required />
+                    <h6 className='mt-1 font-semibold'>Billings</h6>
+                    <input type="search" id="default-search" class="h-[35px] bg-[#F0F8FF] border-[1.5px] border-[#e2edf7] px-12 ml-14 py-0 pl-6 text-sm text-gray-900 focus:ring-blue-500" placeholder="Search" required />
                 </div>
                 <div>
                     <button
                         onClick={() => setToggleAddBillBtn(!toggleAddBillBtn)}
                         type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium text-sm px-5 py-2.5 mr-2">Add New Bill</button>
 
-                    <div id="defaultModal" tabindex="-1" aria-hidden="true" class={`${toggleAddBillBtn ? 'block' : 'hidden'} overflow-y-auto overflow-x-hidden fixed bg-[rgba(188,188,188,.7)] top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full flex shadow-lg justify-center items-center`}>
+                    <div id="defaultModal" tabindex="-1" aria-hidden="true" class={`${toggleAddBillBtn ? 'block' : 'hidden'} overflow-y-auto overflow-x-hidden fixed bg-[rgba(188,188,188,.8)] top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full flex shadow-lg justify-center items-center`}>
                         <div class="relative flex justify-center p-4 w-full max-w-2xl h-full md:h-auto">
                             <div class="relative w-full bg-white rounded-lg shadow dark:bg-gray-700">
 
@@ -32,15 +69,17 @@ const Body = () => {
                                     </button>
                                 </div>
 
-                                <form className='px-3 mt-4 w-3/4 mx-auto'>
+                                <form
+                                    onSubmit={handleAddBillForm}
+                                    className='px-3 mt-4 w-3/4 mx-auto'>
                                     <div class="mb-6">
-                                        <input type="text" id="default-input" name='name' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Full Name'/>
+                                        <input type="text" id="default-input" name='name' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Full Name' />
                                         <br />
-                                        <input type="text" id="default-input" name='email' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Email'/>
+                                        <input type="text" id="default-input" name='email' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Email' />
                                         <br />
-                                        <input type="text" id="default-input" name='phone' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Phone'/>
+                                        <input type="text" id="default-input" name='phone' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Phone' />
                                         <br />
-                                        <input type="text" id="default-input" name='amount' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Paid Amount'/>
+                                        <input type="text" id="default-input" name='amount' class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder='Paid Amount' />
                                         <br />
                                         <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
                                     </div>
@@ -55,23 +94,23 @@ const Body = () => {
 
             {/* body */}
 
-            <div class="relative overflow-x-auto shadow-md">
+            <div class="relative overflow-x-auto shadow-lg">
                 <table class="w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase">
-                        <tr className='bg-[#BCBCBC] border-b border-[#000]'>
-                            <th scope="col" class="px-6 py-3 border-r border-[#000]">
+                        <tr className='bg-[#F0F8FF] border-b border-[#e2edf7]'>
+                            <th scope="col" class="px-6 py-3 border-r border-[#e2edf7]">
                                 Billing ID
                             </th>
-                            <th scope="col" class="px-6 py-3 border-r border-[#000]">
+                            <th scope="col" class="px-6 py-3 border-r border-[#e2edf7]">
                                 Full Name
                             </th>
-                            <th scope="col" class="px-6 py-3 border-r border-[#000]">
+                            <th scope="col" class="px-6 py-3 border-r border-[#e2edf7]">
                                 Email
                             </th>
-                            <th scope="col" class="px-6 py-3 border-r border-[#000]">
+                            <th scope="col" class="px-6 py-3 border-r border-[#e2edf7]">
                                 Phone
                             </th>
-                            <th scope="col" class="px-6 py-3 border-r border-[#000]">
+                            <th scope="col" class="px-6 py-3 border-r border-[#e2edf7]">
                                 Paid Amount
                             </th>
                             <th scope="col" class="px-6 py-3">
@@ -79,7 +118,10 @@ const Body = () => {
                             </th>
                         </tr>
                     </thead>
-                    <TableSingleRow />
+                    {bills.map((bill, key) => <TableSingleRow
+                        key={key}
+                        bill={bill}
+                    />)}
                 </table>
             </div>
 
