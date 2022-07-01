@@ -23,9 +23,14 @@ const TableSingleRow = ({ bill, reRender, setReRender }) => {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
-                setDeleteBtnToggle(!deleteBtnToggle)
-                setReRender(!reRender)
+                if (data.status == '401') {
+                    toast.error(data.msg)
+                    setDeleteBtnToggle(!deleteBtnToggle)
+                } else {
+                    toast.info('Bill Deleted!')
+                    setDeleteBtnToggle(!deleteBtnToggle)
+                    setReRender(!reRender)
+                }
             })
     }
 

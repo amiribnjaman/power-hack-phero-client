@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import TableSingleRow from './TableSingleRow'
+import { toast } from 'react-toastify';
 
-const Body = ({setTotalPaid, setReRender, reRender}) => {
+const Body = ({ totalPaid, setTotalPaid, setReRender, reRender }) => {
     const [toggleAddBillBtn, setToggleAddBillBtn] = useState(false)
     const [bills, setBills] = useState([])
+    const [currentPage, setCurrentPage] = useState(0)
+    const [search, setSearch] = useState('')
 
+
+    // Page count for pagination
+    let pages
+    if (totalPaid > 10) {
+        pages = Math.ceil(totalPaid / 10)
+    }
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/billing-list')
+        fetch(`http://localhost:5000/api/billing-list?page=${currentPage}&search=${search}`)
             .then(res => res.json())
             .then(data => {
                 setBills(data.result)
                 setTotalPaid(data.count)
             })
-    }, [reRender, setTotalPaid])
+    }, [reRender, setTotalPaid, currentPage, search])
 
+    // Handle add bill form
     const handleAddBillForm = e => {
         e.preventDefault()
         const name = e.target.name.value
@@ -29,29 +39,45 @@ const Body = ({setTotalPaid, setReRender, reRender}) => {
             amount
         }
         if (name && email && phone && amount) {
-            fetch('http://localhost:5000/api/add-billing', {
-                method: 'POST',
-                headers: {
-                    'authorization': 'Bearer ' + localStorage.getItem('accessToken'),
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            })
-            .then(res => res.json())
-            .then(data => {
-                setReRender(!reRender)
-                setToggleAddBillBtn(!toggleAddBillBtn)
-            })
+            const regex = /^\S+@\S+\.\S+$/
+            if (regex.test(email)) {
+                if (phone.length >= 11) {
+                    fetch('http://localhost:5000/api/add-billing', {
+                        method: 'POST',
+                        headers: {
+                            'authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+                            'content-type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status == '401') {
+                                toast.error(data.msg)
+                            } else {
+                                toast.success('Bill added successfully!')
+                                setReRender(!reRender)
+                            }
+                            setToggleAddBillBtn(!toggleAddBillBtn)
+                        })
+                }
+            }
+
         }
         e.target.reset()
     }
+
+
+
 
     return (
         <div className='w-9/12 mx-auto my-10'>
             <div className='px-6 mb-8 items-center top-bar bg-[#F0F8FF] shadow-lg py-1.5 flex justify-between'>
                 <div className='flex justify-between w-1/4'>
                     <h6 className='mt-1 font-semibold'>Billings</h6>
-                    <input type="search" id="default-search" class="h-[35px] bg-[#F0F8FF] border-[1.5px] border-[#e2edf7] px-12 ml-14 py-0 pl-6 text-sm text-gray-900 focus:ring-blue-500" placeholder="Search" required />
+                    <input
+                        onChange={(e) => setSearch(e.target.value)}
+                        type="search" id="default-search" class="h-[35px] bg-[#F0F8FF] border-[1.5px] border-[#e2edf7] px-12 ml-14 py-0 pl-6 text-sm text-gray-900 focus:ring-blue-500" placeholder="Search" required />
                 </div>
                 <div>
                     <button
@@ -129,6 +155,16 @@ const Body = ({setTotalPaid, setReRender, reRender}) => {
                         setReRender={setReRender}
                     />)}
                 </table>
+            </div>
+
+            {/* pagination */}
+            <div className='my-10 flex justify-center'>
+                {
+                    pages > 0 ? [...Array(pages).keys()]
+                        .map(num => <button
+                            onClick={() => setCurrentPage(num)}
+                            className={`${currentPage == num ? 'bg-blue-500 text-white border-0' : ''} px-3 bg-white border border-gray-700 mx-2 text-gray-900`}>{num + 1}</button>) : ''
+                }
             </div>
 
         </div>

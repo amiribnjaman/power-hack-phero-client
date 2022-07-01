@@ -15,9 +15,11 @@ function App() {
       reRender={reRender}
       setReRender={setReRender}
       totalPaid={totalPaid}/>
+
       <Body 
       reRender={reRender}
       setReRender={setReRender}
+      totalPaid={totalPaid}
       setTotalPaid={setTotalPaid}/>
       <ToastContainer 
       position="top-center"
